@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f5f5;
+        }
+        
+        body {
+            background-color: var(--secondary-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        
+        .entry-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: #dc3545;
+            cursor: pointer;
+        }
+        
+        .theme-preview {
+            border: 2px solid transparent;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        
+        .theme-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .theme-preview.selected {
+            border-color: var(--primary-color);
+        }
+        
+        .theme-preview img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .preview-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+        
+        #previewModal .modal-dialog {
+            max-width: 90vw;
+        }
+        
+        .social-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .social-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="navbar-brand text-white mb-0">Portfolio Generator</h1>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+        <form action="/generate" method="POST" enctype="multipart/form-data">
+            <!-- Personal Information -->
+            <div class="form-section">
+                <h3 class="section-title">Personal Information</h3>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <label for="name">Full Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="title" name="title" required>
+                            <label for="title">Professional Title</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" id="about" name="about" style="height: 100px" required></textarea>
+                            <label for="about">About Me</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <img id="profilePreview" src="/static/img/default-avatar.png" alt="Profile Preview" 
+                                 class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
+                            <input type="file" class="form-control" id="profileImage" name="profile_image" 
+                                   accept="image/*" onchange="previewImage(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="form-section">
+                <h3 class="section-title">Social Links</h3>
+                <div id="socialLinks">
+                    <div class="social-input">
+                        <i class="fab fa-linkedin social-icon"></i>
+                        <input type="url" class="form-control" name="social_linkedin" placeholder="LinkedIn URL">
+                    </div>
+                    <div class="social-input">
+                        <i class="fab fa-github social-icon"></i>
+                        <input type="url" class="form-control" name="social_github" placeholder="GitHub URL">
+                    </div>
+                    <div class="social-input">
+                        <i class="fab fa-twitter social-icon"></i>
+                        <input type="url" class="form-control" name="social_twitter" placeholder="Twitter URL">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-primary" onclick="addSocialLink()">
+                    <i class="fas fa-plus"></i> Add More Social Links
+                </button>
+            </div>
+
+            <!-- Education -->
+            <div class="form-section">
+                <h3 class="section-title">Education</h3>
+                <div id="education-container">
+                    <div class="entry-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="edu_school[]" required>
+                                    <label>Institution Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="edu_degree[]" required>
+                                    <label>Degree/Certificate</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="edu_year[]" required>
+                                    <label>Year</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" name="edu_grade[]">
+                                    <label>Grade/Score (optional)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="fas fa-times remove-btn" onclick="removeEntry(this)"></i>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-primary" onclick="addEducation()">
+                    <i class="fas fa-plus"></i> Add Education
+                </button>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="form-section">
+                <h3 class="section-title">Work Experience</h3>
+                <div id="experience-container">
+                    <div class="entry-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="exp_company[]" required>
+                                    <label>Company Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="exp_position[]" required>
+                                    <label>Position</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="exp_duration[]" required>
+                                    <label>Duration</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" name="exp_description[]" style="height: 100px" required></textarea>
+                                    <label>Description</label>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="fas fa-times remove-btn" onclick="removeEntry(this)"></i>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-primary" onclick="addExperience()">
+                    <i class="fas fa-plus"></i> Add Experience
+                </button>
+            </div>
+
+            <!-- Skills -->
+            <div class="form-section">
+                <h3 class="section-title">Skills</h3>
+                <div id="skills-container">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" name="skills[]" required>
+                                <label>Skill</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-primary" onclick="addSkill()">
+                    <i class="fas fa-plus"></i> Add Skill
+                </button>
+            </div>
+
+            <!-- Projects -->
+            <div class="form-section">
+                <h3 class="section-title">Projects</h3>
+                <div id="projects-container">
+                    <div class="entry-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="project_title[]" required>
+                                    <label>Project Title</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="url" class="form-control" name="project_link[]">
+                                    <label>Project Link (optional)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" name="project_description[]" style="height: 100px" required></textarea>
+                                    <label>Description</label>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="fas fa-times remove-btn" onclick="removeEntry(this)"></i>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-primary" onclick="addProject()">
+                    <i class="fas fa-plus"></i> Add Project
+                </button>
+            </div>
+
+            <!-- Theme Selection -->
+            <div class="form-section">
+                <h3 class="section-title">Choose Theme</h3>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="theme-preview" onclick="selectTheme(this, 'modern')">
+                            <img src="{{ url_for('static', filename='img/themes/modern.png') }}" alt="Modern Theme">
+                            <h5 class="text-center">Modern</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="theme-preview" onclick="selectTheme(this, 'minimal')">
+                            <img src="{{ url_for('static', filename='img/themes/minimal.png') }}" alt="Minimal Theme">
+                            <h5 class="text-center">Minimal</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="theme-preview" onclick="selectTheme(this, 'creative')">
+                            <img src="{{ url_for('static', filename='img/themes/creative.png') }}" alt="Creative Theme">
+                            <h5 class="text-center">Creative</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="theme-preview" onclick="selectTheme(this, 'neon')">
+                            <img src="{{ url_for('static', filename='img/themes/neon.png') }}" alt="Neon Theme">
+                            <h5 class="text-center">Neon</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="theme-preview" onclick="selectTheme(this, 'terminal')">
+                            <img src="{{ url_for('static', filename='img/themes/terminal.png') }}" alt="Terminal Theme">
+                            <h5 class="text-center">Terminal</h5>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="theme" id="selectedTheme" value="modern">
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Generate Portfolio</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview Button -->
+    <button class="btn btn-primary btn-lg preview-btn" onclick="previewPortfolio()">
+        <i class="fas fa-eye"></i> Preview
+    </button>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Portfolio Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="previewFrame" style="width: 100%; height: 80vh; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePreview').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addSocialLink() {
+            const container = document.getElementById('socialLinks');
+            const div = document.createElement('div');
+            div.className = 'social-input';
+            div.innerHTML = `
+                <select class="form-select" style="width: 100px;" onchange="updateSocialIcon(this)">
+                    <option value="fab fa-facebook">Facebook</option>
+                    <option value="fab fa-instagram">Instagram</option>
+                    <option value="fab fa-youtube">YouTube</option>
+                    <option value="fab fa-dribbble">Dribbble</option>
+                    <option value="fab fa-behance">Behance</option>
+                </select>
+                <input type="url" class="form-control" name="social_custom[]" placeholder="Social Media URL">
+                <i class="fas fa-times text-danger" onclick="this.parentElement.remove()" style="cursor: pointer;"></i>
+            `;
+            container.appendChild(div);
+        }
+
+        function updateSocialIcon(select) {
+            const icon = select.previousElementSibling;
+            icon.className = select.value + ' social-icon';
+        }
+
+        function addEducation() {
+            const container = document.getElementById('education-container');
+            const template = container.children[0].cloneNode(true);
+            clearInputs(template);
+            container.appendChild(template);
+        }
+
+        function addExperience() {
+            const container = document.getElementById('experience-container');
+            const template = container.children[0].cloneNode(true);
+            clearInputs(template);
+            container.appendChild(template);
+        }
+
+        function addSkill() {
+            const container = document.getElementById('skills-container');
+            const template = container.children[0].cloneNode(true);
+            clearInputs(template);
+            container.appendChild(template);
+        }
+
+        function addProject() {
+            const container = document.getElementById('projects-container');
+            const template = container.children[0].cloneNode(true);
+            clearInputs(template);
+            container.appendChild(template);
+        }
+
+        function removeEntry(btn) {
+            const entry = btn.parentElement;
+            if (entry.parentElement.children.length > 1) {
+                entry.remove();
+            }
+        }
+
+        function clearInputs(element) {
+            element.querySelectorAll('input, textarea').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        function selectTheme(element, theme) {
+            document.querySelectorAll('.theme-preview').forEach(preview => {
+                preview.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('selectedTheme').value = theme;
+        }
+
+        function previewPortfolio() {
+            const formData = new FormData(document.querySelector('form'));
+            fetch('/preview', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+                const iframe = document.getElementById('previewFrame');
+                iframe.srcdoc = html;
+                modal.show();
+            });
+        }
+    </script>
+</body>
+</html>

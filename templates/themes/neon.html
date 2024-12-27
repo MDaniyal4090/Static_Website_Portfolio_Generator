@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ data.name }} - Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-primary: #0ff;
+            --neon-secondary: #f0f;
+            --neon-accent: #ff0;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --light-text: #fff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 5px var(--neon-primary),
+                         0 0 10px var(--neon-primary),
+                         0 0 20px var(--neon-primary);
+            animation: neonPulse 1.5s infinite alternate;
+        }
+        
+        @keyframes neonPulse {
+            from {
+                text-shadow: 0 0 5px var(--neon-primary),
+                            0 0 10px var(--neon-primary),
+                            0 0 20px var(--neon-primary);
+            }
+            to {
+                text-shadow: 0 0 2px var(--neon-primary),
+                            0 0 5px var(--neon-primary),
+                            0 0 10px var(--neon-primary);
+            }
+        }
+        
+        .hero {
+            min-height: 100vh;
+            background: var(--darker-bg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                transparent 0%,
+                rgba(0, 255, 255, 0.05) 0.5%,
+                transparent 1%
+            );
+            animation: scan 10s linear infinite;
+        }
+        
+        @keyframes scan {
+            from {
+                transform: translateY(-50%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .profile-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 4px solid var(--neon-primary);
+            box-shadow: 0 0 20px var(--neon-primary);
+            margin-bottom: 2rem;
+            animation: profileGlow 2s infinite alternate;
+        }
+        
+        @keyframes profileGlow {
+            from {
+                box-shadow: 0 0 20px var(--neon-primary);
+            }
+            to {
+                box-shadow: 0 0 40px var(--neon-primary);
+            }
+        }
+        
+        .glitch-text {
+            position: relative;
+            animation: glitch 1s infinite;
+        }
+        
+        @keyframes glitch {
+            0% {
+                transform: none;
+                opacity: 1;
+            }
+            7% {
+                transform: skew(-0.5deg, -0.9deg);
+                opacity: 0.75;
+            }
+            10% {
+                transform: none;
+                opacity: 1;
+            }
+            27% {
+                transform: none;
+                opacity: 1;
+            }
+            30% {
+                transform: skew(0.8deg, -0.1deg);
+                opacity: 0.75;
+            }
+            35% {
+                transform: none;
+                opacity: 1;
+            }
+            52% {
+                transform: none;
+                opacity: 1;
+            }
+            55% {
+                transform: skew(-1deg, 0.2deg);
+                opacity: 0.75;
+            }
+            50% {
+                transform: none;
+                opacity: 1;
+            }
+            72% {
+                transform: none;
+                opacity: 1;
+            }
+            75% {
+                transform: skew(0.4deg, 1deg);
+                opacity: 0.75;
+            }
+            80% {
+                transform: none;
+                opacity: 1;
+            }
+            100% {
+                transform: none;
+                opacity: 1;
+            }
+        }
+        
+        .section {
+            padding: 6rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+            color: var(--neon-secondary);
+            text-shadow: 0 0 10px var(--neon-secondary);
+        }
+        
+        .neon-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--neon-primary);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .neon-card:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .skill-badge {
+            background: linear-gradient(45deg, var(--neon-primary), var(--neon-secondary));
+            color: var(--dark-bg);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            margin: 0.5rem;
+            display: inline-block;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .skill-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        }
+        
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--neon-secondary);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .project-content {
+            padding: 2rem;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid var(--neon-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-accent);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.2);
+        }
+        
+        .social-icon:hover {
+            background: var(--neon-accent);
+            color: var(--dark-bg);
+            transform: rotate(360deg);
+            box-shadow: 0 0 25px rgba(255, 255, 0, 0.4);
+        }
+        
+        .neon-btn {
+            background: transparent;
+            border: 2px solid var(--neon-primary);
+            color: var(--neon-primary);
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+        
+        .neon-btn:hover {
+            background: var(--neon-primary);
+            color: var(--dark-bg);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+        
+        footer {
+            background: var(--darker-bg);
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 1px solid var(--neon-primary);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                min-height: 80vh;
+            }
+            
+            .profile-img {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .section {
+                padding: 4rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            {% if data.profile_image %}
+                <img src="{{ url_for('static', filename='uploads/' + data.profile_image) }}" alt="{{ data.name }}" class="profile-img">
+            {% endif %}
+            <h1 class="display-3 fw-bold mb-3 neon-text glitch-text">{{ data.name }}</h1>
+            <p class="lead fs-2 mb-4">{{ data.title }}</p>
+            {% if data.social_links %}
+                <div class="social-links">
+                    {% if data.social_links.linkedin %}
+                        <a href="{{ data.social_links.linkedin }}" class="social-icon" target="_blank">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    {% endif %}
+                    {% if data.social_links.github %}
+                        <a href="{{ data.social_links.github }}" class="social-icon" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    {% endif %}
+                    {% if data.social_links.twitter %}
+                        <a href="{{ data.social_links.twitter }}" class="social-icon" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="section" id="about">
+            <h2 class="section-title">About Me</h2>
+            <div class="neon-card">
+                <p class="lead">{{ data.about }}</p>
+            </div>
+        </section>
+
+        {% if data.education %}
+            <section class="section" id="education">
+                <h2 class="section-title">Education</h2>
+                {% for edu in data.education %}
+                    <div class="neon-card">
+                        <h4 class="fw-bold neon-text">{{ edu.school }}</h4>
+                        <p class="text-muted fs-5">{{ edu.degree }}</p>
+                        <p class="mb-0">{{ edu.year }}{% if edu.grade %} - {{ edu.grade }}{% endif %}</p>
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        {% if data.experience %}
+            <section class="section" id="experience">
+                <h2 class="section-title">Experience</h2>
+                {% for exp in data.experience %}
+                    <div class="neon-card">
+                        <h4 class="fw-bold neon-text">{{ exp.position }}</h4>
+                        <p class="text-muted fs-5">{{ exp.company }}</p>
+                        <p class="mb-2">{{ exp.duration }}</p>
+                        <p class="mb-0">{{ exp.description }}</p>
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        {% if data.skills %}
+            <section class="section" id="skills">
+                <h2 class="section-title">Skills</h2>
+                <div class="neon-card text-center">
+                    {% for skill in data.skills %}
+                        <span class="skill-badge">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        {% if data.projects %}
+            <section class="section" id="projects">
+                <h2 class="section-title">Projects</h2>
+                <div class="row">
+                    {% for project in data.projects %}
+                        <div class="col-md-6 mb-4">
+                            <div class="project-card">
+                                <div class="project-content">
+                                    <h3 class="fw-bold mb-3 neon-text">{{ project.title }}</h3>
+                                    <p class="mb-4">{{ project.description }}</p>
+                                    {% if project.link %}
+                                        <a href="{{ project.link }}" class="neon-btn" target="_blank">
+                                            View Project <i class="fas fa-arrow-right ms-2"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="section" id="contact">
+            <h2 class="section-title">Get in Touch</h2>
+            <div class="neon-card text-center">
+                <h4 class="fw-bold mb-3 neon-text">Email</h4>
+                <p class="mb-0">
+                    <a href="mailto:{{ data.email }}" class="neon-text">{{ data.email }}</a>
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0"> {{ data.name }} - {{ now.year }}</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ data.name }} - Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --terminal-bg: #1a1a1a;
+            --terminal-text: #00ff00;
+            --terminal-prompt: #00ff00;
+            --terminal-cursor: #00ff00;
+            --terminal-selection: rgba(0, 255, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        ::selection {
+            background: var(--terminal-selection);
+            color: var(--terminal-text);
+        }
+        
+        body {
+            font-family: 'Source Code Pro', monospace;
+            background-color: var(--terminal-bg);
+            color: var(--terminal-text);
+            line-height: 1.6;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 0, 0.03) 0px,
+                rgba(0, 255, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .terminal-window {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--terminal-text);
+            border-radius: 5px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 25px;
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom: 1px solid var(--terminal-text);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+        
+        .terminal-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid var(--terminal-text);
+        }
+        
+        .terminal-content {
+            margin-top: 25px;
+        }
+        
+        .command-prompt {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .prompt-symbol {
+            color: var(--terminal-prompt);
+            margin-right: 10px;
+        }
+        
+        .command-text {
+            position: relative;
+        }
+        
+        .command-text::after {
+            content: '|';
+            position: absolute;
+            right: -10px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            border-bottom: 1px solid var(--terminal-text);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '>';
+            margin-right: 10px;
+            color: var(--terminal-prompt);
+        }
+        
+        .skill-tag {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border: 1px solid var(--terminal-text);
+            border-radius: 3px;
+            margin: 0.3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            background: var(--terminal-text);
+            color: var(--terminal-bg);
+        }
+        
+        .project-card {
+            border: 1px solid var(--terminal-text);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .social-link {
+            color: var(--terminal-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            color: rgba(0, 255, 0, 0.7);
+        }
+        
+        .terminal-btn {
+            background: transparent;
+            border: 1px solid var(--terminal-text);
+            color: var(--terminal-text);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .terminal-btn:hover {
+            background: var(--terminal-text);
+            color: var(--terminal-bg);
+        }
+        
+        .typing-animation {
+            overflow: hidden;
+            border-right: 2px solid var(--terminal-text);
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: 
+                typing 3.5s steps(40, end),
+                blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--terminal-text) }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .terminal-window {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-buttons">
+                    <div class="terminal-button"></div>
+                    <div class="terminal-button"></div>
+                    <div class="terminal-button"></div>
+                </div>
+            </div>
+            <div class="terminal-content">
+                <div class="command-prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="command-text typing-animation">whoami</span>
+                </div>
+                <div class="mb-4">
+                    <pre>
+Name: {{ data.name }}
+Title: {{ data.title }}
+Status: Available for opportunities
+                    </pre>
+                </div>
+
+                <div class="command-prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="command-text">cat about.txt</span>
+                </div>
+                <div class="mb-4">
+                    <pre>{{ data.about }}</pre>
+                </div>
+
+                {% if data.education %}
+                    <div class="command-prompt">
+                        <span class="prompt-symbol">$</span>
+                        <span class="command-text">cat education.log</span>
+                    </div>
+                    <div class="mb-4">
+                        <pre>
+{% for edu in data.education %}
+[{{ edu.year }}] {{ edu.school }}
+    └── {{ edu.degree }}{% if edu.grade %} ({{ edu.grade }}){% endif %}
+{% endfor %}
+                        </pre>
+                    </div>
+                {% endif %}
+
+                {% if data.experience %}
+                    <div class="command-prompt">
+                        <span class="prompt-symbol">$</span>
+                        <span class="command-text">cat experience.log</span>
+                    </div>
+                    <div class="mb-4">
+                        <pre>
+{% for exp in data.experience %}
+[{{ exp.duration }}] {{ exp.company }}
+    └── {{ exp.position }}
+    └── {{ exp.description }}
+{% endfor %}
+                        </pre>
+                    </div>
+                {% endif %}
+
+                {% if data.skills %}
+                    <div class="command-prompt">
+                        <span class="prompt-symbol">$</span>
+                        <span class="command-text">ls skills/</span>
+                    </div>
+                    <div class="mb-4">
+                        {% for skill in data.skills %}
+                            <span class="skill-tag">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if data.projects %}
+                    <div class="command-prompt">
+                        <span class="prompt-symbol">$</span>
+                        <span class="command-text">ls projects/</span>
+                    </div>
+                    <div class="mb-4">
+                        {% for project in data.projects %}
+                            <div class="project-card">
+                                <h4>{{ project.title }}</h4>
+                                <pre>{{ project.description }}</pre>
+                                {% if project.link %}
+                                    <a href="{{ project.link }}" class="terminal-btn" target="_blank">
+                                        View Project <i class="fas fa-external-link-alt ms-2"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="command-prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="command-text">cat contact.txt</span>
+                </div>
+                <div class="mb-4">
+                    <pre>
+Email: {{ data.email }}
+                    </pre>
+                    {% if data.social_links %}
+                        <div class="social-links">
+                            {% if data.social_links.linkedin %}
+                                <a href="{{ data.social_links.linkedin }}" class="social-link" target="_blank">
+                                    <i class="fab fa-linkedin fa-lg"></i>
+                                </a>
+                            {% endif %}
+                            {% if data.social_links.github %}
+                                <a href="{{ data.social_links.github }}" class="social-link" target="_blank">
+                                    <i class="fab fa-github fa-lg"></i>
+                                </a>
+                            {% endif %}
+                            {% if data.social_links.twitter %}
+                                <a href="{{ data.social_links.twitter }}" class="social-link" target="_blank">
+                                    <i class="fab fa-twitter fa-lg"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="command-prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="command-text">echo "© {{ now.year }} {{ data.name }}"</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add typing animation to commands
+        document.querySelectorAll('.command-text').forEach((element, index) => {
+            if (index === 0) return; // Skip first command as it has permanent animation
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.style.opacity = '1';
+                element.classList.add('typing-animation');
+            }, index * 1000);
+        });
+    </script>
+</body>
+</html>
